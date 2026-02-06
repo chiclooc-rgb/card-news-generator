@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카드뉴스 생성기 — CARD NEWS GENERATOR</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
+</head>
+<body>
+    <!-- ═══════════════ TOAST CONTAINER ═══════════════ -->
+    <div id="toast-container"></div>
+
+    <!-- ═══════════════ MODAL OVERLAY ═══════════════ -->
+    <div id="modal-overlay" class="modal-overlay" hidden>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title"></h3>
+                <button class="modal-close" onclick="App.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <header class="hero">
+        <div class="hero-decoration hero-deco-1"></div>
+        <div class="hero-decoration hero-deco-2"></div>
+        <div class="hero-grain"></div>
+        <div class="hero-inner">
+            <h1 class="hero-title">CARD NEWS<br>GENERATOR</h1>
+            <p class="hero-subtitle">AI 기반 카드뉴스 자동 생성 시스템</p>
+            <div class="hero-dropzone" id="hero-dropzone">
+                <div class="dropzone-default" id="dropzone-default">
+                    <p class="dropzone-text">파일을 여기에 드래그하거나 클릭하세요</p>
+                    <button class="btn-cta" id="btn-upload-cta">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        UPLOAD
+                    </button>
+                </div>
+                <div class="dropzone-uploaded" id="dropzone-uploaded" hidden>
+                    <div class="file-badge" id="file-badge">
+                        <span class="file-icon" id="file-icon"></span>
+                        <span class="file-name" id="file-name"></span>
+                        <button class="file-remove" id="file-remove">&times;</button>
+                    </div>
+                    <p class="dropzone-text">다른 파일을 드래그하여 교체할 수 있습니다</p>
+                </div>
+                <input type="file" id="file-input" accept=".txt,.pdf" hidden>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════════════ TAB NAV ═══════════════ -->
+    <nav class="tab-nav">
+        <div class="tab-nav-inner">
+            <button class="tab-btn active" data-tab="step1">
+                <span class="tab-num">01</span>
+                <span class="tab-label">기획안 생성</span>
+            </button>
+            <button class="tab-btn" data-tab="step2">
+                <span class="tab-num">02</span>
+                <span class="tab-label">디자인 생성</span>
+            </button>
+            <button class="tab-btn" data-tab="gallery">
+                <span class="tab-num">03</span>
+                <span class="tab-label">갤러리</span>
+            </button>
+            <div class="tab-indicator"></div>
+        </div>
+    </nav>
+
+    <!-- ═══════════════ MAIN LAYOUT ═══════════════ -->
+    <div class="main-wrap">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <!-- API Key -->
+            <div class="sidebar-card">
+                <h4 class="sidebar-card-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777Zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                    API 설정
+                </h4>
+                <div class="form-group">
+                    <label class="form-label">Google API Key</label>
+                    <div class="input-with-btn">
+                        <input type="password" class="form-input" id="api-key-input" placeholder="AIza...">
+                        <button class="btn-icon" id="btn-toggle-key" title="키 표시/숨김">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    <button class="btn-sm btn-primary" id="btn-save-key" style="margin-top:8px;width:100%">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1-2 2h11l4 4v9a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        저장
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="sidebar-card stats-card">
+                <h4 class="sidebar-card-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                    통계
+                </h4>
+                <div class="stat-row">
+                    <span class="stat-label">업로드 파일</span>
+                    <span class="stat-value" id="stat-files">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">생성된 기획안</span>
+                    <span class="stat-value" id="stat-plans">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">생성된 이미지</span>
+                    <span class="stat-value" id="stat-images">0</span>
+                </div>
+            </div>
+
+            <!-- Queue -->
+            <div class="sidebar-card queue-card">
+                <h4 class="sidebar-card-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/><path d="m15 9 6-6"/></svg>
+                    작업 대기열
+                </h4>
+                <div class="queue-list" id="queue-list">
+                    <div class="queue-empty">대기 중인 작업 없음</div>
+                </div>
+                <div class="queue-actions" id="queue-actions" hidden>
+                    <button class="btn-sm btn-ghost" id="btn-pause-queue">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                        일시정지
+                    </button>
+                    <button class="btn-sm btn-danger" id="btn-clear-queue">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        초기화
+                    </button>
+                </div>
+            </div>
+
+            <!-- Log -->
+            <div class="sidebar-card log-card">
+                <h4 class="sidebar-card-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    실행 로그
+                </h4>
+                <div class="log-box" id="log-box">
+                    <div class="log-empty">아직 실행 로그가 없습니다.</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content">
+
+            <!-- ═══ STEP 1: 기획안 생성 ═══ -->
+            <section class="tab-panel active" id="panel-step1">
+                <div class="section-header">
+                    <h2 class="section-title">기획안 생성</h2>
+                    <p class="section-desc">업로드된 원고를 기반으로 카드뉴스 기획안을 자동 생성합니다.</p>
+                </div>
+
+                <!-- No file state -->
+                <div class="empty-state" id="step1-empty">
+                    <div class="empty-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </div>
+                    <p class="empty-text">파일을 먼저 업로드해주세요</p>
+                    <p class="empty-hint">상단 히어로 영역에서 TXT 또는 PDF 파일을 드래그하세요.</p>
+                </div>
+
+                <!-- File uploaded state -->
+                <div id="step1-ready" hidden>
+                    <div class="card">
+                        <h3 class="card-title">생성 옵션</h3>
+                        <div class="option-grid">
+                            <div class="option-group">
+                                <label class="form-label">기획 상세도</label>
+                                <div class="radio-group">
+                                    <label class="radio-card">
+                                        <input type="radio" name="detail-level" value="simple" checked>
+                                        <div class="radio-card-body">
+                                            <span class="radio-card-title">간략</span>
+                                            <span class="radio-card-desc">1~2페이지 핵심 요약</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="detail-level" value="detailed">
+                                        <div class="radio-card-body">
+                                            <span class="radio-card-title">상세</span>
+                                            <span class="radio-card-desc">다중 페이지 심화 기획</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary btn-lg" id="btn-generate-plan">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            기획안 생성
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading state -->
+                <div id="step1-loading" hidden>
+                    <div class="card">
+                        <div class="skeleton-block" style="height:24px;width:40%;margin-bottom:16px"></div>
+                        <div class="skeleton-block" style="height:16px;width:100%;margin-bottom:8px"></div>
+                        <div class="skeleton-block" style="height:16px;width:85%;margin-bottom:8px"></div>
+                        <div class="skeleton-block" style="height:16px;width:92%;margin-bottom:24px"></div>
+                        <div class="skeleton-block" style="height:120px;width:100%;margin-bottom:12px"></div>
+                        <div class="skeleton-block" style="height:120px;width:100%"></div>
+                    </div>
+                </div>
+
+                <!-- Plan result -->
+                <div id="step1-result" hidden>
+                    <div class="card plan-card">
+                        <div class="plan-header">
+                            <h3 class="card-title">기획안</h3>
+                            <div class="plan-actions">
+                                <button class="btn-sm btn-ghost" id="btn-edit-plan">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    편집
+                                </button>
+                                <button class="btn-sm btn-primary" id="btn-goto-step2">
+                                    다음 단계
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- View mode -->
+                        <div id="plan-view">
+                            <div class="plan-section" id="plan-cover-section">
+                                <div class="plan-section-tag">COVER</div>
+                                <h4 class="plan-main-title" id="plan-main-title"></h4>
+                                <p class="plan-sub-title" id="plan-sub-title"></p>
+                            </div>
+                            <div id="plan-body-sections"></div>
+                            <div class="plan-section" id="plan-outro-section">
+                                <div class="plan-section-tag tag-outro">OUTRO</div>
+                                <div id="plan-outro-content"></div>
+                            </div>
+                        </div>
+
+                        <!-- Edit mode -->
+                        <div id="plan-edit" hidden>
+                            <div class="plan-edit-section">
+                                <label class="form-label">표지 (COVER)</label>
+                                <input type="text" class="form-input" id="edit-main-title" placeholder="메인 제목">
+                                <input type="text" class="form-input" id="edit-sub-title" placeholder="부제목" style="margin-top:8px">
+                            </div>
+                            <div class="plan-edit-section">
+                                <div class="plan-edit-section-header">
+                                    <label class="form-label">본문 (BODY)</label>
+                                    <button class="btn-sm btn-ghost" id="btn-add-page">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                        페이지 추가
+                                    </button>
+                                </div>
+                                <div id="edit-body-pages"></div>
+                            </div>
+                            <div class="plan-edit-section">
+                                <label class="form-label">마무리 (OUTRO)</label>
+                                <div id="edit-outro-fields"></div>
+                            </div>
+                            <div class="plan-edit-actions">
+                                <button class="btn-primary" id="btn-save-edit">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                    저장
+                                </button>
+                                <button class="btn-ghost" id="btn-cancel-edit">취소</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ STEP 2: 디자인 생성 ═══ -->
+            <section class="tab-panel" id="panel-step2">
+                <div class="section-header">
+                    <h2 class="section-title">디자인 생성</h2>
+                    <p class="section-desc">기획안을 기반으로 카드뉴스 이미지를 자동으로 생성합니다.</p>
+                </div>
+
+                <!-- No plan state -->
+                <div class="empty-state" id="step2-empty">
+                    <div class="empty-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    </div>
+                    <p class="empty-text">기획안을 먼저 생성해주세요</p>
+                    <p class="empty-hint">Step 1에서 기획안을 생성한 후 이 단계를 진행하세요.</p>
+                </div>
+
+                <!-- Design options -->
+                <div id="step2-ready" hidden>
+                    <!-- Aspect Ratio -->
+                    <div class="card">
+                        <h3 class="card-title">화면 비율</h3>
+                        <div class="ratio-grid">
+                            <label class="ratio-card active" data-ratio="4:5">
+                                <input type="radio" name="aspect-ratio" value="4:5" checked>
+                                <div class="ratio-preview ratio-4-5"></div>
+                                <span class="ratio-label">4:5</span>
+                                <span class="ratio-desc">인스타그램</span>
+                            </label>
+                            <label class="ratio-card" data-ratio="1:1">
+                                <input type="radio" name="aspect-ratio" value="1:1">
+                                <div class="ratio-preview ratio-1-1"></div>
+                                <span class="ratio-label">1:1</span>
+                                <span class="ratio-desc">정사각형</span>
+                            </label>
+                            <label class="ratio-card" data-ratio="9:16">
+                                <input type="radio" name="aspect-ratio" value="9:16">
+                                <div class="ratio-preview ratio-9-16"></div>
+                                <span class="ratio-label">9:16</span>
+                                <span class="ratio-desc">릴스/스토리</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Design Concepts -->
+                    <div class="card" id="concept-card">
+                        <h3 class="card-title">디자인 컨셉</h3>
+                        <div class="concept-grid" id="concept-grid">
+                            <!-- Populated by JS -->
+                        </div>
+                        <button class="btn-primary btn-lg" id="btn-generate-design" style="margin-top:20px">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            전체 디자인 생성
+                        </button>
+                    </div>
+
+                    <!-- Generation Progress -->
+                    <div class="card" id="design-progress-card" hidden>
+                        <h3 class="card-title">생성 진행</h3>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar" id="design-progress-bar"></div>
+                        </div>
+                        <p class="progress-text" id="progress-text">0 / 0 페이지 생성 중...</p>
+                        <div id="design-pages-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ GALLERY ═══ -->
+            <section class="tab-panel" id="panel-gallery">
+                <div class="section-header">
+                    <div class="section-header-row">
+                        <div>
+                            <h2 class="section-title">갤러리</h2>
+                            <p class="section-desc">생성된 카드뉴스 이미지를 미리보기하고 다운로드합니다.</p>
+                        </div>
+                        <div class="gallery-view-toggle">
+                            <button class="btn-icon active" id="btn-grid-view" title="그리드 뷰">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                            </button>
+                            <button class="btn-icon" id="btn-list-view" title="리스트 뷰">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empty-state" id="gallery-empty">
+                    <div class="empty-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    </div>
+                    <p class="empty-text">생성된 이미지가 없습니다</p>
+                    <p class="empty-hint">Step 2에서 디자인을 생성하면 이곳에 표시됩니다.</p>
+                </div>
+
+                <div class="gallery-grid" id="gallery-grid" hidden>
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ═══════════════ MOBILE SIDEBAR TOGGLE ═══════════════ -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+
+    <script src="app.js"></script>
+</body>
+</html>

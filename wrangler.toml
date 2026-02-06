@@ -1,0 +1,16 @@
+# Cloudflare Pages 설정
+name = "card-news-generator"
+compatibility_date = "2024-12-01"
+
+# Pages 프로젝트 설정
+# 정적 파일은 루트 디렉토리에서 서빙
+# functions/ 디렉토리의 JS 파일은 자동으로 Workers로 배포
+
+# 환경변수 (민감한 값은 Cloudflare Dashboard에서 Secrets로 설정)
+# [vars]
+# GOOGLE_API_KEY = "your-api-key-here"  # Dashboard에서 설정 권장
+
+# KV 바인딩 (스타일 DB용 - 선택사항)
+# [[kv_namespaces]]
+# binding = "STYLE_DB"
+# id = "your-kv-namespace-id"
