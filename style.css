@@ -28,11 +28,11 @@
     --border: #F0F2F5;
     --border-mid: #E5E8EB;
 
-    /* Accent (Dark Green) */
-    --green: #1A3A2A;
-    --green-hover: #24503A;
-    --blue: #2D6B4A;
-    --blue-hover: #1A3A2A;
+    /* Accent (Deep Forest Green) */
+    --green: #34854F;
+    --green-hover: #2A6E42;
+    --blue: #3D9A5C;
+    --blue-hover: #34854F;
 
     /* Danger */
     --red: #FF4757;
@@ -141,7 +141,7 @@ body {
     height: 500px;
     top: -200px;
     left: -150px;
-    background: radial-gradient(circle, rgba(26, 58, 42, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(52, 133, 79, 0.15) 0%, transparent 70%);
     animation: heroFloat 8s ease-in-out infinite;
 }
 
@@ -150,7 +150,7 @@ body {
     height: 400px;
     bottom: -150px;
     right: -100px;
-    background: radial-gradient(circle, rgba(26, 58, 42, 0.12) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(52, 133, 79, 0.12) 0%, transparent 70%);
     animation: heroFloat 10s ease-in-out infinite reverse;
 }
 
@@ -211,7 +211,7 @@ body {
 
 .hero-dropzone.dragover {
     border-color: var(--blue);
-    background: rgba(26, 58, 42, 0.08);
+    background: rgba(52, 133, 79, 0.08);
 }
 
 .dropzone-default,
@@ -249,13 +249,13 @@ body {
     letter-spacing: 2px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 16px rgba(26, 58, 42, 0.35);
+    box-shadow: 0 4px 16px rgba(52, 133, 79, 0.35);
 }
 
 .btn-cta:hover {
     background: var(--green-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(26, 58, 42, 0.45);
+    box-shadow: 0 6px 20px rgba(52, 133, 79, 0.45);
 }
 
 .hero-file-info {
@@ -561,7 +561,7 @@ body {
 
 .form-input:focus {
     border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.1);
+    box-shadow: 0 0 0 3px rgba(52, 133, 79, 0.1);
 }
 
 .form-input::placeholder { color: var(--text-light); }
@@ -600,7 +600,7 @@ textarea.form-input {
 .btn-primary:hover {
     background: var(--green-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(26, 58, 42, 0.25);
+    box-shadow: 0 4px 12px rgba(52, 133, 79, 0.25);
 }
 
 .btn-primary:active { transform: translateY(0); }
@@ -826,7 +826,7 @@ textarea.form-input {
 
 .radio-card input:checked + .radio-card-body {
     border-color: var(--green);
-    background: rgba(26, 58, 42, 0.04);
+    background: rgba(52, 133, 79, 0.04);
 }
 
 .radio-card:hover .radio-card-body {
@@ -989,7 +989,7 @@ textarea.form-input {
 .ratio-card.active,
 .ratio-card:has(input:checked) {
     border-color: var(--green);
-    background: rgba(26, 58, 42, 0.03);
+    background: rgba(52, 133, 79, 0.03);
 }
 
 .ratio-card:hover { border-color: var(--border-mid); }
@@ -1043,7 +1043,7 @@ textarea.form-input {
 
 .concept-card.selected {
     border-color: var(--green);
-    background: rgba(26, 58, 42, 0.03);
+    background: rgba(52, 133, 79, 0.03);
 }
 
 .concept-name {
@@ -1501,7 +1501,7 @@ textarea.form-input {
     z-index: 200;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 16px rgba(26, 58, 42, 0.4);
+    box-shadow: 0 4px 16px rgba(52, 133, 79, 0.4);
     transition: all 0.2s;
 }
 
